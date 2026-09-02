@@ -1,3 +1,5 @@
+import { DEFAULT_SETTINGS, type FiscalSettings } from "./fiscalite";
+
 export type Inputs = {
   capitalInitial: number;
   versementMensuel: number;
@@ -7,6 +9,8 @@ export type Inputs = {
   tmiActuelle: number;
   tmiRetraite: number;
   couple: boolean;
+  /** Plafond annuel de déduction PER (optionnel : limite l'économie d'impôt à l'entrée). */
+  plafondPerAnnuel?: number;
 };
 
 export type Enveloppe = {
@@ -36,7 +40,10 @@ export function valeurFuture(capital: number, mensuel: number, annees: number, t
   return fvCapital + fvVersements;
 }
 
-export function comparer(input: Inputs): { enveloppes: Enveloppe[]; totalVerse: number } {
+export function comparer(
+  input: Inputs,
+  settings: FiscalSettings = DEFAULT_SETTINGS,
+): { enveloppes: Enveloppe[]; totalVerse: number } {
   const {
     capitalInitial,
     versementMensuel,
@@ -46,24 +53,38 @@ export function comparer(input: Inputs): { enveloppes: Enveloppe[]; totalVerse: 
     tmiActuelle,
     tmiRetraite,
     couple,
+    plafondPerAnnuel,
   } = input;
 
-  const totalVerse = capitalInitial + versementMensuel * 12 * Math.round(duree);
+  const ps = settings.ps / 100;
+  const pfu = (settings.pfu_ir + settings.ps) / 100;
+  const tauxAvReduit = settings.av_taux_reduit / 100;
+
+  const anneesEntieres = Math.round(duree);
+  const totalVerse = capitalInitial + versementMensuel * 12 * anneesEntieres;
   const brut = valeurFuture(capitalInitial, versementMensuel, duree, rendement);
   const gains = Math.max(brut - totalVerse, 0);
 
   const brutLivret = valeurFuture(capitalInitial, versementMensuel, duree, tauxLivretA);
   const gainsLivret = Math.max(brutLivret - totalVerse, 0);
 
-  const abattementAv = couple ? 9200 : 4600;
+  const abattementAv = couple ? settings.av_abattement_couple : settings.av_abattement_solo;
   const gainsAvImposables = Math.max(gains - abattementAv, 0);
-  const impotAv8 = gainsAvImposables * 0.075 + gains * PS;
+  const impotAv8 = gainsAvImposables * tauxAvReduit + gains * ps;
 
-  const impotPfu = gains * PFU;
-  const impotPea = gains * PS;
+  const impotPfu = gains * pfu;
+  const impotPea = gains * ps;
 
-  const economieEntreePer = totalVerse * (tmiActuelle / 100);
-  const impotPer = totalVerse * (tmiRetraite / 100) + gains * PFU - economieEntreePer;
+  // Versements PER retenus dans la limite du plafond annuel de déduction.
+  const versementsAnnuelsPer = versementMensuel * 12;
+  const verseDeductible =
+    plafondPerAnnuel && plafondPerAnnuel > 0
+      ? Math.min(versementsAnnuelsPer, plafondPerAnnuel) * anneesEntieres +
+        Math.min(capitalInitial, Math.max(plafondPerAnnuel - versementsAnnuelsPer, 0))
+      : totalVerse;
+
+  const economieEntreePer = verseDeductible * (tmiActuelle / 100);
+  const impotPer = totalVerse * (tmiRetraite / 100) + gains * pfu - economieEntreePer;
 
   const enveloppes: Enveloppe[] = [
     {
@@ -82,7 +103,7 @@ export function comparer(input: Inputs): { enveloppes: Enveloppe[]; totalVerse: 
     {
       id: "pea",
       nom: "PEA >5 ans",
-      regle: "Exo IR, PS 17,2% sur gains",
+      regle: `Exo IR, PS ${settings.ps} % sur gains`,
       liquidite: 3,
       horizon: ">5 ans",
       transmission: "Standard (succession)",
@@ -95,7 +116,7 @@ export function comparer(input: Inputs): { enveloppes: Enveloppe[]; totalVerse: 
     {
       id: "av8plus",
       nom: "Assurance-vie >8 ans",
-      regle: `Abattement ${abattementAv.toLocaleString("fr-FR")} € + 7,5% + PS`,
+      regle: `Abattement ${abattementAv.toLocaleString("fr-FR")} € + ${settings.av_taux_reduit} % + PS`,
       liquidite: 4,
       horizon: ">8 ans",
       transmission: "Excellent (152 500 €/bénéf.)",
@@ -108,7 +129,7 @@ export function comparer(input: Inputs): { enveloppes: Enveloppe[]; totalVerse: 
     {
       id: "av8moins",
       nom: "Assurance-vie <8 ans",
-      regle: "PFU 30% (12,8% + 17,2%)",
+      regle: `PFU ${(settings.pfu_ir + settings.ps).toFixed(1)} % (${settings.pfu_ir} % + ${settings.ps} %)`,
       liquidite: 3,
       horizon: "4-8 ans",
       transmission: "Excellent (art. 990 I)",
@@ -121,7 +142,7 @@ export function comparer(input: Inputs): { enveloppes: Enveloppe[]; totalVerse: 
     {
       id: "cto",
       nom: "CTO (ordinaire)",
-      regle: "PFU 30% (12,8% IR + 17,2% PS)",
+      regle: `PFU ${(settings.pfu_ir + settings.ps).toFixed(1)} % (${settings.pfu_ir} % IR + ${settings.ps} % PS)`,
       liquidite: 5,
       horizon: "Flexible",
       transmission: "Standard",
