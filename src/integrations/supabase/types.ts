@@ -14,16 +14,150 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      fiscal_settings: {
+        Row: {
+          av_abattement_couple: number
+          av_abattement_solo: number
+          av_taux_reduit: number
+          bareme: Json
+          created_at: string
+          id: string
+          per_plafond_max: number
+          per_plafond_min: number
+          per_taux_deduction: number
+          pfu_ir: number
+          ps: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          av_abattement_couple?: number
+          av_abattement_solo?: number
+          av_taux_reduit?: number
+          bareme?: Json
+          created_at?: string
+          id?: string
+          per_plafond_max?: number
+          per_plafond_min?: number
+          per_taux_deduction?: number
+          pfu_ir?: number
+          ps?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          av_abattement_couple?: number
+          av_abattement_solo?: number
+          av_taux_reduit?: number
+          bareme?: Json
+          created_at?: string
+          id?: string
+          per_plafond_max?: number
+          per_plafond_min?: number
+          per_taux_deduction?: number
+          pfu_ir?: number
+          ps?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          nom: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          nom?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          nom?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      simulations: {
+        Row: {
+          cotisations: number
+          couple: boolean
+          created_at: string
+          enfants: number
+          id: string
+          inputs: Json
+          resultats: Json
+          revenus: number
+          user_id: string
+        }
+        Insert: {
+          cotisations?: number
+          couple?: boolean
+          created_at?: string
+          enfants?: number
+          id?: string
+          inputs?: Json
+          resultats?: Json
+          revenus?: number
+          user_id: string
+        }
+        Update: {
+          cotisations?: number
+          couple?: boolean
+          created_at?: string
+          enfants?: number
+          id?: string
+          inputs?: Json
+          resultats?: Json
+          revenus?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +284,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
