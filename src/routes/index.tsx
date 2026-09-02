@@ -42,7 +42,8 @@ function SimulateurEnveloppes() {
   const [applique, setApplique] = useState<Inputs>(defauts);
 
   const { enveloppes, totalVerse } = useMemo(() => comparer(applique), [applique]);
-  const gagnant = enveloppes[0];
+  const gagnant = enveloppes[0]!;
+
 
   const set = <K extends keyof Inputs>(key: K) => (value: Inputs[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
