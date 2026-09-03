@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedEspaceRouteImport } from './routes/_authenticated/espace'
+import { Route as AuthenticatedParametresRouteImport } from './routes/_authenticated/parametres'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -33,16 +34,23 @@ const AuthenticatedEspaceRoute = AuthenticatedEspaceRouteImport.update({
   path: '/espace',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedParametresRoute = AuthenticatedParametresRouteImport.update({
+  id: '/parametres',
+  path: '/parametres',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/espace': typeof AuthenticatedEspaceRoute
+  '/parametres': typeof AuthenticatedParametresRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/espace': typeof AuthenticatedEspaceRoute
+  '/parametres': typeof AuthenticatedParametresRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -50,13 +58,20 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/espace': typeof AuthenticatedEspaceRoute
+  '/_authenticated/parametres': typeof AuthenticatedParametresRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/espace'
+  fullPaths: '/' | '/auth' | '/espace' | '/parametres'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/espace'
-  id: '__root__' | '/' | '/_authenticated' | '/auth' | '/_authenticated/espace'
+  to: '/' | '/auth' | '/espace' | '/parametres'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/espace'
+    | '/_authenticated/parametres'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -95,15 +110,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEspaceRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/parametres': {
+      id: '/_authenticated/parametres'
+      path: '/parametres'
+      fullPath: '/parametres'
+      preLoaderRoute: typeof AuthenticatedParametresRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedEspaceRoute: typeof AuthenticatedEspaceRoute
+  AuthenticatedParametresRoute: typeof AuthenticatedParametresRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEspaceRoute: AuthenticatedEspaceRoute,
+  AuthenticatedParametresRoute: AuthenticatedParametresRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
