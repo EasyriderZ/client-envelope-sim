@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
 import { NumberField } from "@/components/simulateur/NumberField";
@@ -60,13 +60,21 @@ function SimulateurEnveloppes() {
             </p>
             <p className="text-xs text-muted-foreground">Outils clients en marque blanche</p>
           </div>
-          <button
-            type="button"
-            onClick={() => window.print()}
-            className="rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-cta transition-transform hover:-translate-y-0.5"
-          >
-            Télécharger le PDF
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              to="/espace"
+              className="rounded-full border border-border px-5 py-2.5 text-sm font-bold text-foreground hover:border-brand hover:text-brand"
+            >
+              Espace client
+            </Link>
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-cta transition-transform hover:-translate-y-0.5"
+            >
+              Télécharger le PDF
+            </button>
+          </div>
         </div>
       </header>
 

@@ -151,8 +151,8 @@ export const enregistrerSimulation = createServerFn({ method: "POST" })
       enfants: Math.max(0, Math.round(Number(data.enfants) || 0)),
       cotisations: Number(data.cotisations) || 0,
       couple: Boolean(data.couple),
-      inputs: data.inputs ?? {},
-      resultats: data.resultats ?? {},
+      inputs: JSON.parse(JSON.stringify(data.inputs ?? {})),
+      resultats: JSON.parse(JSON.stringify(data.resultats ?? {})),
     });
     if (error) throw new Error(error.message);
     return { ok: true };
