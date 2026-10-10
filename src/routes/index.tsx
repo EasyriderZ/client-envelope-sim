@@ -54,12 +54,11 @@ function SimulateurEnveloppes() {
     <div className="min-h-screen bg-background">
       <header className="no-print border-b border-border bg-card">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-4">
-          <div>
-            <p className="text-lg font-extrabold tracking-tight text-foreground">
-              Simulateurs <span className="text-brand">patrimoniaux</span>
-            </p>
-            <p className="text-xs text-muted-foreground">Outils clients en marque blanche</p>
-          </div>
+          <img
+            src="/logo-antea.jpg"
+            alt="Antea Patrimoine"
+            className="h-20 w-auto rounded-md"
+          />
           <div className="flex flex-wrap items-center gap-3">
             <Link
               to="/espace"
