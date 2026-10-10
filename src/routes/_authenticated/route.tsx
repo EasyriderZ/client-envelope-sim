@@ -18,8 +18,8 @@ function AuthenticatedLayout() {
     <div className="min-h-screen bg-background">
       <header className="no-print border-b border-border bg-card">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-4">
-          <Link to="/" className="text-lg font-extrabold tracking-tight text-foreground">
-            Simulateurs <span className="text-brand">patrimoniaux</span>
+          <Link to="/">
+            <img src="/logo-antea.jpg" alt="Antea Patrimoine" className="h-16 w-auto rounded-md" />
           </Link>
           <nav className="flex flex-wrap items-center gap-4 text-sm font-semibold">
             <Link to="/espace" className="text-muted-foreground hover:text-brand">
